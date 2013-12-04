@@ -1,0 +1,2661 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"> 
+<head>
+<script type="text/javascript" src="js/jquery.loadmask.js"></script>
+<script type="text/javascript" src="js/jquery.datepick.js"></script>
+<script type="text/javascript" src="js/movendelete.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script> 
+ <script src="http://malsup.github.com/jquery.form.js"></script>
+<script src="http://malsup.github.com/jquery.form.js"></script> 
+<script src="http://code.jquery.com/jquery-latest.js"></script> 
+<link href="css/jquery.loadmask.css" rel="stylesheet" type="text/css" />
+<link type="text/css" href="css/custom-theme/jquery-ui-1.8.16.custom.css" rel="stylesheet"/>
+<link type="text/css" href="css/custom-theme/jive-elements.css" rel="stylesheet"/>
+<link type="text/css" href="css/custom-theme/jive-icons.css" rel="stylesheet"/>
+<link type="text/css" href="css/security-groups.css" rel="stylesheet"/>
+<link type="text/css" href="style.css" rel="stylesheet"/>
+<LINK href="css/jquery.datepick.css" rel="stylesheet" type="text/css"/>		
+<link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+
+var loggedUser='';
+var loggedUserName='';
+
+var space_url='';
+var to_url='';
+var redirection_url='';
+var source_html_url='';
+
+var files_row='';
+var docs_row='';
+var disc_row='';
+var idea_row='';
+var blog_row='';
+var poll_row='';
+
+var src_space_name='';
+var dest_space_name='';
+
+var Grp_file_json='';
+var Grp_doc_json='';
+var Grp_idea_json='';
+var Grp_disc_json='';
+var Grp_blog_json='';
+var Grp_poll_json='';
+var finalJSON = '';
+var sel_action_val='';
+var msg2='Please select a place.';
+
+function showLoading() 
+{
+$("#maskLoad").mask("Please Wait...");
+}
+
+function hideLoading() 
+{
+
+$("#maskLoad").unmask();
+}   
+
+function handleResponse(data) 
+{
+alert("Error in Application..!!");
+console.log(data);    		
+}
+
+function onPageLoad() 
+{
+osapi.people.get({
+userId : '@me'
+}).execute(function(response) {
+//alert(JSON.stringify(response));
+loggedUser =response.id; 
+loggedUserName=response.name.formatted;
+//alert("loggedUser: "+loggedUser);
+//alert("loggedUserName: "+loggedUserName);
+});
+
+}
+
+function selected_action()
+{
+var sel_action = document.getElementById("src_place");
+sel_action_val = sel_action.options[sel_action.selectedIndex].value;
+//alert("sel_action_val : "+sel_action_val);
+
+if(sel_action_val=="copy"){
+src_space_name='';
+dest_space_name='';
+$("#cmdu").text("Copy");
+$("#to_space").hide();
+$("#to_group").hide();
+$("#to_project").hide();
+$("#from_space").hide();
+$("#from_group").hide();
+$("#from_project").hide();
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+$("#deleteFrom").hide();
+$("#upFrom").hide();
+$('#all_selected_items').css("margin-top", "0px");
+$('#selected_items').css("margin-top", "0px");
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").hide();
+$("#upTo").hide();
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+$("#del_select_items_button").hide();
+$("#up_select_items_button").hide();
+document.getElementById("copyTo").style.visibility="hidden";
+$('#to_place :selected').text('Select Place');	
+$('#from_place :selected').text('Select Place');
+document.getElementById("del_place").style.display="inline";
+document.getElementById("up_place").style.display="inline";
+$("#del_place").hide();
+$("#up_place").hide();
+$("#change_selection_div").hide();
+$("#stylized").show();
+$("#showDiv").show();
+$("#to_place").show();
+$("#copyTo").show();
+$('#from_label').text("Copy From:");
+$('#to_label').text("Copy To:");
+$("#copyTo").text("Copy this:").append('<br/>');
+$('#start_copying_button').val('Start Copying');
+$('#start_copying_button').click(function(){startCopying();});		
+}
+else if(sel_action_val=="move"){
+src_space_name='';
+dest_space_name='';
+$("#cmdu").text("Move");
+$('#all_selected_items').css("margin-top", "0px");
+$('#selected_items').css("margin-top", "0px");
+$("#to_space").hide();
+$("#to_group").hide();
+$("#to_project").hide();
+$("#from_space").hide();
+$("#from_group").hide();
+$("#from_project").hide();
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+$("#deleteFrom").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+$("#upFrom").hide();
+document.getElementById("deleteTo").style.display="inline";
+document.getElementById("upTo").style.display="inline";
+$("#deleteTo").hide();
+$("#upTo").hide();
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+$("#del_select_items_button").hide();
+$("#up_select_items_button").hide();
+document.getElementById("copyTo").style.visibility="hidden";
+$('#to_place :selected').text('Select Place');	
+$('#from_place :selected').text('Select Place');
+document.getElementById("del_place").style.display="inline";
+document.getElementById("up_place").style.display="inline";
+$("#del_place").hide();
+$("#up_place").hide();
+$("#change_selection_div").hide();
+$("#stylized").show();
+$("#showDiv").show();
+$("#to_place").show();
+$("#copyTo").show();
+$('#from_label').text("Move From:");
+$('#to_label').text("Move To:");
+$("#copyTo").text("Move this:").append('<br/>');
+$('#start_copying_button').val('Start Moving');
+$('#start_copying_button').click(function(){startMoving();});
+}
+else if(sel_action_val=="delete"){
+src_space_name='';
+dest_space_name='';
+$("#cmdu").text("Delete");
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+//$("#stylized").show();
+$("#change_selection_div").hide();
+$("#showDiv").hide();
+//$("#deleteFrom").show();
+document.getElementById("del_place").style.display="inline";
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+document.getElementById("up_place").style.display="inline";
+$("#del_place").css("margin-top", "110px");
+$("#del_select_items_button").hide();
+$("#up_select_items_button").hide();
+$("#copyTo").hide();
+$("#up_place").hide();
+$("#delShow").show();
+$("#upShow").hide();
+$("#upTo").hide();
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+document.getElementById("deleteFrom").style.display="inline";
+document.getElementById("upFrom").style.display="inline";
+//$("#copyTo").text("Delete this:").append('<br/>');
+$('#upFrom').hide();
+$('#from_label').hide();
+$('#to_label').hide();
+$('#to_place').hide();
+$("#to_space").hide();
+$("#to_group").hide();
+$("#to_project").hide();	
+$('#start_copying_button').val('Start Deleting');
+$('#start_copying_button').click(function(){startDeleting();});
+}
+else if(sel_action_val=="uploadd"){
+src_space_name='';
+dest_space_name='';
+$("#cmdu").text("Upload");
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+//$("#stylized").show();
+$("#change_selection_div").hide();
+$("#showDiv").hide();
+$("#deleteFrom").hide();
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").hide();
+document.getElementById("up_place").style.display="inline";
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+$("#del_place").hide();
+$("#del_select_items_button").hide();
+$("#up_select_items_button").hide();
+$("#copyTo").hide();
+$("#delShow").hide();
+$("#upShow").show();
+$("#up_place").show();
+$('#up_place').css("margin-top", "90px");
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+document.getElementById("upFrom").style.display="inline";
+//$("#copyTo").text("Delete this:").append('<br/>');
+$('#from_label').hide();
+$('#to_label').hide();
+$('#to_place').hide();
+$("#to_space").hide();
+$("#to_group").hide();
+$("#to_project").hide();	
+}
+else if(sel_action_val=="select_action"){
+src_space_name='';
+dest_space_name='';
+
+document.getElementById("del_place").style.display="inline";
+//$("#stylized").hide();
+$("#change_selection_div").hide();
+$("#deleteFrom").hide();
+$("#upFrom").hide();
+document.getElementById("deleteTo").style.display="inline";
+document.getElementById("upTo").style.display="inline";
+$("#deleteTo").hide();
+$("#upTo").hide();
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+$("#del_select_items_button").hide();
+$("#up_select_items_button").hide();
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+$("#showDiv").hide();
+$("#copyTo").hide();
+$("#delShow").hide();
+$("#del_place").hide();
+$("#upShow").hide();
+$("#up_place").hide();
+}
+}
+
+function fromPlace()
+{
+
+var from_place = document.getElementById("from_place");
+var from_sel_place = from_place.options[from_place.selectedIndex].value;
+//alert("selected_value method_one: "+selected_value);
+
+if(from_sel_place=="select_space"){
+src_space_name='';
+dest_space_name='';
+document.getElementById("to_space").innerHTML=msg2;
+document.getElementById("to_group").innerHTML=msg2;
+document.getElementById("to_project").innerHTML=msg2;
+$("#change_selection_div").hide();
+$("#change_contents").hide();
+$("#start_copying_button").hide();
+fromSpaceRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(from_sel_place=="select_group"){
+src_space_name='';
+dest_space_name='';
+document.getElementById("to_space").innerHTML=msg2;
+document.getElementById("to_group").innerHTML=msg2;
+document.getElementById("to_project").innerHTML=msg2;
+$("#change_selection_div").hide();
+$("#change_contents").hide();
+$("#start_copying_button").hide();
+fromGroupRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(from_sel_place=="select_project"){
+src_space_name='';
+dest_space_name='';
+document.getElementById("to_space").innerHTML=msg2;
+document.getElementById("to_group").innerHTML=msg2;
+document.getElementById("to_project").innerHTML=msg2;
+$("#change_selection_div").hide();
+$("#change_contents").hide();
+$("#start_copying_button").hide();
+fromProjectRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+}
+else if(from_sel_place=="select_one"){
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();
+document.getElementById("copyTo").style.visibility="hidden";
+}
+}
+
+function delFromPlace()
+{
+
+var from_place = document.getElementById("del_place");
+var from_sel_place = from_place.options[from_place.selectedIndex].value;
+//alert("selected_value method_one: "+selected_value);
+
+if(from_sel_place=="select_space"){
+fromSpaceRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(from_sel_place=="select_group"){
+fromGroupRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(from_sel_place=="select_project"){
+fromProjectRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(from_sel_place=="select_one"){
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();
+document.getElementById("copyTo").style.visibility="hidden";
+}
+}
+
+function upFromPlace()
+{
+
+var up_place = document.getElementById("up_place");
+var up_sel_place = up_place.options[up_place.selectedIndex].value;
+//alert("selected_value method_one: "+selected_value);
+
+if(up_sel_place=="select_space"){
+toSpaceRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(up_sel_place=="select_group"){
+toGroupRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(up_sel_place=="select_project"){
+toProjectRequest();
+document.getElementById("copyTo").style.visibility="hidden";
+
+}
+else if(up_sel_place=="select_one"){
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();
+document.getElementById("copyTo").style.visibility="hidden";
+}
+}
+
+function toPlace()
+{
+
+var to_place = document.getElementById("to_place");
+var to_sel_place = to_place.options[to_place.selectedIndex].value;
+//alert("selected_value method_one: "+selected_value);
+
+if(to_sel_place=="to_space"){
+toSpaceRequest();
+}
+else if(to_sel_place=="to_group"){
+toGroupRequest();
+}
+else if(to_sel_place=="to_project"){
+toProjectRequest();
+}
+else if(to_sel_place=="select_to"){
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();
+document.getElementById("copyTo").style.visibility="hidden";
+}
+}
+
+function fromSpaceRequest() {
+var from_place_name='';
+src_space_name='';
+dest_space_name='';
+
+var params = {
+type : "space",
+success : ( function(data){
+//showTab();
+//console.log("DATA: "+JSON.stringify(data));
+from_place_name=data.name;
+src_space_name=from_place_name;
+space_url=data.resources.self.ref;
+blog_url=data.resources.blog.ref;
+source_html_url=data.resources.html.ref;
+//alert('blog_url: '+blog_url);
+//console.log('blog_url: '+blog_url);
+
+//	alert("from_place_name: "+from_place_name);
+document.getElementById("from_space").innerHTML='<span id="myId" style="text-decoration:underline;">Space</span>'+': '+from_place_name;
+
+if(from_place_name!='')
+{
+//alert("dest: "+dest_space_name+" from place: "+from_place_name);
+if(dest_space_name==from_place_name)
+{
+//alert("The source place and destination place should be different..!!");
+if(sel_action_val=="move"){
+$("#dialogMove").show();
+$("#dialogMove").dialog();
+}
+else{
+$("#dialog").show();
+$("#dialog").dialog();
+}
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("from_space").innerHTML=msg2;
+document.getElementById("copyTo").style.visibility="hidden";
+}
+else
+{	
+var dialog_obj = $("#dialog");
+dialog_obj.dialog("close");
+var dialog_obj2 = $("#dialogMove");
+dialog_obj2.dialog("close");
+
+// alert("dest: "+dest_space_name+" from place: "+from_place_name);		
+//document.getElementById("start_copying_button").style.visibility="visible";
+//$("#button_div").show();	
+//$("#change_selection_div").hide();
+//document.getElementById("copyTo").style.visibility="visible";
+document.getElementById("from_space").innerHTML='<span id="myId" style="text-decoration:underline;">Space</span>'+': '+from_place_name;	
+
+}
+}
+
+//changing the selection to 'Change Place'	   
+$("#from_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#from_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#from_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+$("#del_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#del_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#del_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+getDocs(space_url);
+getFiles(space_url);
+getDiscussions(space_url);
+getIdeas(space_url);
+getPolls(space_url);
+getBlogs(blog_url);
+
+if(sel_action_val=="delete")
+{
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+$("#deleteTo").text("Delete this:").append('<br/>');
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").show();
+$("#upTo").hide();
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+$("#del_select_items_button").show();
+$("#up_select_items_button").hide();
+$("#change_selection_div").hide();
+$("#delShow").show();
+$("#upShow").show();
+$("#up_place").hide();
+document.getElementById("del_place").style.display="inline";
+$("#del_place").show();
+document.getElementById("del_from_space").innerHTML='<span id="myId" style="text-decoration:underline;">Space</span>'+': '+from_place_name;
+$("#del_place").css("margin-top", "130px");
+$("#del_from_space").show();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+}
+else if(sel_action_val=="select_action")
+{
+document.getElementById("del_place").style.display="inline";
+//$("#stylized").hide();
+$("#change_selection_div").hide();
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+$("#deleteFrom").hide();
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").hide();
+
+$("#showDiv").hide();
+$("#copyTo").hide();
+$("#delShow").hide();
+$("#upShow").hide();
+$("#del_place").hide();
+}
+
+$("#from_space").show();
+$("#from_group").hide();
+$("#from_project").hide();
+} ),
+error : handleResponse  };
+
+if(from_place_name=='')
+{
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("to_space").innerHTML=msg2;
+}
+
+osapi.jive.corev3.places.requestPicker(params);	
+}
+
+function fromGroupRequest() {
+var from_place_name='';
+src_space_name='';
+dest_space_name='';
+
+var params = {
+type : "group",
+success : ( function(data){
+//showTab();
+//console.log("DATA: "+JSON.stringify(data));
+from_place_name=data.name;
+src_space_name=from_place_name;
+space_url=data.resources.self.ref;
+blog_url=data.resources.blog.ref;
+source_html_url=data.resources.html.ref;
+//alert('blog_url: '+blog_url);
+//console.log('blog_url: '+blog_url);
+
+//	alert("from_place_name: "+from_place_name);
+document.getElementById("from_group").innerHTML='<span id="myId" style="text-decoration:underline;">Group</span>'+': '+from_place_name;
+
+if(from_place_name!='')
+{
+//alert("dest: "+dest_space_name+" from place: "+from_place_name);
+if(dest_space_name==from_place_name)
+{
+//alert("The source place and destination place should be different..!!");
+if(sel_action_val=="move"){
+$("#dialogMove").show();
+$("#dialogMove").dialog();
+}
+else{
+$("#dialog").show();
+$("#dialog").dialog();
+}
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("from_group").innerHTML=msg2;
+}
+else
+{	
+//alert("esle : ");	
+var dialog_obj = $("#dialog");
+dialog_obj.dialog("close");	
+var dialog_obj2 = $("#dialogMove");
+dialog_obj2.dialog("close");	
+//document.getElementById("start_copying_button").style.visibility="visible";
+//$("#button_div").show();	
+//$("#change_selection_div").hide();
+//document.getElementById("copyTo").style.visibility="visible";
+document.getElementById("from_group").innerHTML='<span id="myId" style="text-decoration:underline;">Group</span>'+': '+from_place_name;	
+
+}
+}
+
+//changing the selection to 'Change Place'	   
+$("#from_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#from_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#from_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+$("#del_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#del_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#del_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+getDocs(space_url);
+getFiles(space_url);
+getDiscussions(space_url);
+getIdeas(space_url);
+getPolls(space_url);
+getBlogs(blog_url);
+
+if(sel_action_val=="delete")
+{
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+$("#deleteTo").text("Delete this:").append('<br/>');
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").show();
+$("#upTo").hide();
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+$("#del_select_items_button").show();
+$("#up_select_items_button").hide();
+$("#change_selection_div").hide();
+$("#delShow").show();
+$("#upShow").hide();
+$("#up_place").hide();
+document.getElementById("del_place").style.display="inline";
+$("#del_place").show();
+document.getElementById("del_from_group").innerHTML='<span id="myId" style="text-decoration:underline;">Group</span>'+': '+from_place_name;
+$("#del_place").css("margin-top", "130px");
+$("#del_from_group").show();
+$("#del_from_space").hide();
+$("#del_from_project").hide();
+}
+else if(sel_action_val=="select_action")
+{
+document.getElementById("del_place").style.display="inline";
+//$("#stylized").hide();
+$("#change_selection_div").hide();
+$("#showDiv").hide();
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").hide();
+$("#copyTo").hide();
+$("#delShow").hide();
+$("#upShow").hide();
+$("#deleteFrom").hide();
+$("#del_place").hide();
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+}
+
+
+$("#from_space").hide();
+$("#from_group").show();
+$("#from_project").hide();
+} ),
+error : handleResponse  };
+
+//alert("src_space_name: "+src_space_name);
+if(from_place_name=='')
+{
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("from_group").innerHTML=msg2;
+}
+
+osapi.jive.corev3.places.requestPicker(params);	
+}
+
+function fromProjectRequest() {
+var from_place_name='';
+src_space_name='';
+dest_space_name='';
+
+var params = {
+type : "project",
+success : ( function(data){
+//showTab();
+//console.log("DATA: "+JSON.stringify(data));
+from_place_name=data.name;
+src_space_name=from_place_name;
+space_url=data.resources.self.ref;
+blog_url=data.resources.blog.ref;
+source_html_url=data.resources.html.ref;
+//alert('blog_url: '+blog_url);
+//console.log('blog_url: '+blog_url);
+
+//	alert("from_place_name: "+from_place_name);
+document.getElementById("from_project").innerHTML='<span id="myId" style="text-decoration:underline;">Project</span>'+': '+from_place_name;
+
+if(from_place_name!='')
+{
+if(dest_space_name==from_place_name)
+{
+//alert("The source place and destination place should be different..!!");
+if(sel_action_val=="move"){
+$("#dialogMove").show();
+$("#dialogMove").dialog();
+}
+else{
+$("#dialog").show();
+$("#dialog").dialog();
+}
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("from_project").innerHTML=msg2;
+}
+else
+{		
+var dialog_obj = $("#dialog");
+dialog_obj.dialog("close");
+var dialog_obj2 = $("#dialogMove");
+dialog_obj2.dialog("close");
+//document.getElementById("start_copying_button").style.visibility="visible";
+//$("#button_div").show();	
+//$("#change_selection_div").hide();
+//document.getElementById("copyTo").style.visibility="visible";
+document.getElementById("from_project").innerHTML='<span id="myId" style="text-decoration:underline;">Project</span>'+': '+from_place_name;	
+
+}
+}
+
+//changing the selection to 'Change Place'	   
+$("#from_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#from_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#from_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+$("#del_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#del_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#del_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+getDocs(space_url);
+getFiles(space_url);
+getDiscussions(space_url);
+getIdeas(space_url);
+getPolls(space_url);
+getBlogs(blog_url);
+
+if(sel_action_val=="delete")
+{
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+$("#deleteTo").text("Delete this:").append('<br/>');
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").show();
+$("#upTo").hide();
+document.getElementById("del_select_items_button").style.display="inline";
+document.getElementById("up_select_items_button").style.display="inline";
+$("#del_select_items_button").show();
+$("#up_select_items_button").hide();
+$("#change_selection_div").hide();
+$("#delShow").show();
+$("#upShow").hide();
+$("#up_place").hide();
+document.getElementById("del_place").style.display="inline";
+$("#del_place").show();
+document.getElementById("del_from_project").innerHTML='<span id="myId" style="text-decoration:underline;">Project</span>'+': '+from_place_name;
+$("#del_place").css("margin-top", "130px");
+$("#del_from_project").show();
+$("#del_from_group").hide();
+$("#del_from_space").hide();
+}
+else if(sel_action_val=="select_action")
+{
+document.getElementById("del_place").style.display="inline";
+//$("#stylized").hide();		
+$("#change_selection_div").hide();
+$("#showDiv").hide();
+$("#copyTo").hide();
+$("#delShow").hide();
+$("#upShow").hide();
+document.getElementById("deleteTo").style.display="inline";
+$("#deleteTo").hide();
+$("#del_place").hide();
+$("#deleteFrom").hide();
+$("#del_from_space").hide();
+$("#del_from_group").hide();
+$("#del_from_project").hide();
+}
+
+$("#from_space").hide();
+$("#from_group").hide();
+$("#from_project").show();
+} ),
+error : handleResponse  };
+
+if(from_place_name=='')
+{
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("from_project").innerHTML=msg2;
+}
+
+osapi.jive.corev3.places.requestPicker(params);	
+}
+
+function toSpaceRequest() {
+var to_place_name='';
+var params = {
+type : "space",
+success : ( function(data){
+//console.log("DATA: "+JSON.stringify(data));
+to_place_name=data.name;		
+//showing execute button		
+
+if(to_place_name!='')
+{
+if(src_space_name==to_place_name)
+{
+//alert("The source place and destination place should be different..!!");
+if(sel_action_val=="move"){
+$("#dialogMove").show();
+$("#dialogMove").dialog();
+}
+else{
+$("#dialog").show();
+$("#dialog").dialog();
+}
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("to_space").innerHTML=msg2;
+}
+else
+{	
+if(sel_action_val=='copy')		
+$("#copyTo").text("Copy this:").append('<br/>');
+else
+$("#copyTo").text("Move this:").append('<br/>');
+
+var dialog_obj = $("#dialog");
+dialog_obj.dialog("close");
+var dialog_obj2 = $("#dialogMove");
+dialog_obj2.dialog("close");
+document.getElementById("start_copying_button").style.visibility="visible";
+document.getElementById("start_uploading").style.visibility="hidden";
+$("#button_div").show();	
+$("#change_selection_div").hide();
+document.getElementById("copyTo").style.visibility="visible";
+document.getElementById("to_space").innerHTML='<span id="myId" style="text-decoration:underline;">Space</span>'+': '+to_place_name;	
+}
+}
+to_url=data.resources.self.ref;
+redirection_url=data.resources.html.ref;
+dest_space_name=to_place_name;
+
+//changing the selection to 'Change Place'	   
+$("#to_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#to_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#to_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});	
+
+$("#up_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#up_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#up_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+if(sel_action_val=="uploadd")
+{
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+$("#upTo").text("Upload this:").append('<br/>');
+document.getElementById("upTo").style.display="inline";
+$("#upTo").show();
+document.getElementById("up_select_items_button").style.display="inline";
+document.getElementById("del_select_items_button").style.display="inline";
+$("#up_select_items_button").show();
+$('#up_select_items_button').css("margin-top", "180px");
+$('#up_select_items_button').css("margin-left", "-80px");
+$("#del_select_items_button").hide();
+$("#button_div").hide();	
+$("#change_selection_div").hide();
+$("#upShow").show();
+document.getElementById("up_place").style.display="inline";
+$("#up_place").show();
+document.getElementById("up_from_space").innerHTML='<span id="myId" style="text-decoration:underline;">Space</span>'+': '+to_place_name;
+$('#up_place').css("margin-top", "120px");
+$("#up_from_project").hide();
+$("#up_from_group").hide();
+$("#up_from_space").show();
+}
+else if(sel_action_val=="select_action")
+{
+document.getElementById("up_place").style.display="inline";
+//$("#stylized").hide();		
+$("#change_selection_div").hide();
+$("#showDiv").hide();
+$("#copyTo").hide();
+$("#upShow").hide();
+document.getElementById("upTo").style.display="inline";
+$("#upTo").hide();
+$("#up_place").hide();
+$("#upFrom").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+}
+
+$("#to_space").show();
+$("#to_group").hide();
+$("#to_project").hide();
+} ),
+error : handleResponse  };
+//hiding execute button
+if(to_place_name=='')
+{
+//document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+//document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("copyTo").style.visibility="visible";
+//document.getElementById("to_space").innerHTML=msg2;
+document.getElementById("to_space").innerHTML='<span id="myId" style="text-decoration:underline;">Space</span>'+': '+dest_space_name;
+$("#to_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#to_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#to_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});	
+}
+
+osapi.jive.corev3.places.requestPicker(params);
+}
+
+function toGroupRequest() {
+var to_place_name='';
+var params = {
+type : "group",
+success : ( function(data){
+//console.log("DATA: "+JSON.stringify(data));
+to_place_name=data.name;
+//showing execute button		
+if(to_place_name!='')
+{
+if(src_space_name==to_place_name)
+{
+//alert("The source place and destination place should be different..!!");
+if(sel_action_val=="move"){
+$("#dialogMove").show();
+$("#dialogMove").dialog();
+}
+else{
+$("#dialog").show();
+$("#dialog").dialog();
+}
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("to_group").innerHTML=msg2;
+}
+else
+{		
+if(sel_action_val=='copy')		
+$("#copyTo").text("Copy this:").append('<br/>');
+else
+$("#copyTo").text("Move this:").append('<br/>');  
+
+var dialog_obj = $("#dialog");
+dialog_obj.dialog("close");    
+var dialog_obj2 = $("#dialogMove");
+dialog_obj2.dialog("close");  	
+document.getElementById("start_copying_button").style.visibility="visible";
+document.getElementById("start_uploading").style.visibility="hidden";
+$("#button_div").show();	
+$("#change_selection_div").hide();
+document.getElementById("copyTo").style.visibility="visible";
+document.getElementById("to_group").innerHTML='<span id="myId" style="text-decoration:underline;">Group</span>'+': '+to_place_name;	
+}
+}
+
+to_url=data.resources.self.ref;
+redirection_url=data.resources.html.ref;
+dest_space_name=to_place_name;
+
+
+//changing the selection to 'Change Place'	   
+$("#to_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#to_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#to_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});	
+
+$("#up_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#up_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#up_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+if(sel_action_val=="uploadd")
+{
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+$("#upTo").text("Upload this:").append('<br/>');
+document.getElementById("upTo").style.display="inline";
+$("#upTo").show();
+document.getElementById("up_select_items_button").style.display="inline";
+document.getElementById("del_select_items_button").style.display="inline";
+$("#up_select_items_button").show();
+$('#up_select_items_button').css("margin-top", "180px");
+$('#up_select_items_button').css("margin-left", "-80px");
+$("#del_select_items_button").hide();
+$("#change_selection_div").hide();
+$("#button_div").hide();
+$("#upShow").show();
+document.getElementById("up_place").style.display="inline";
+$("#up_place").show();
+document.getElementById("up_from_group").innerHTML='<span id="myId" style="text-decoration:underline;">Group</span>'+': '+to_place_name;
+$('#up_place').css("margin-top", "120px");
+$("#up_from_project").hide();
+$("#up_from_group").show();
+$("#up_from_space").hide();
+}
+else if(sel_action_val=="select_action")
+{
+document.getElementById("up_place").style.display="inline";
+//$("#stylized").hide();		
+$("#change_selection_div").hide();
+$("#showDiv").hide();
+$("#copyTo").hide();
+$("#upShow").hide();
+document.getElementById("upTo").style.display="inline";
+$("#upTo").hide();
+$("#up_place").hide();
+$("#upFrom").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+}
+
+$("#to_space").hide();
+$("#to_group").show();
+$("#to_project").hide();
+} ),
+error : handleResponse  };
+
+if(to_place_name=='')
+{
+//document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+//document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("copyTo").style.visibility="visible";
+//document.getElementById("to_group").innerHTML=msg2;
+document.getElementById("to_group").innerHTML='<span id="myId" style="text-decoration:underline;">Group</span>'+': '+dest_space_name;	
+$("#to_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#to_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#to_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});	
+}
+
+osapi.jive.corev3.places.requestPicker(params);
+}
+
+function toProjectRequest() {
+var to_place_name='';
+var params = {
+type : "project",
+success : ( function(data){
+//console.log("DATA: "+JSON.stringify(data));
+to_place_name=data.name;
+//showing execute button		
+if(to_place_name!='')
+{
+if(src_space_name==to_place_name)
+{
+//alert("The source place and destination place should be different..!!");
+if(sel_action_val=="move"){
+$("#dialogMove").show();
+$("#dialogMove").dialog();
+}
+else{
+$("#dialog").show();
+$("#dialog").dialog();
+}
+document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("to_project").innerHTML=msg2;
+}
+else
+{
+if(sel_action_val=='copy')		
+$("#copyTo").text("Copy this:").append('<br/>');
+else
+$("#copyTo").text("Move this:").append('<br/>');
+
+var dialog_obj = $("#dialog");
+dialog_obj.dialog("close");
+var dialog_obj2 = $("#dialogMove");
+dialog_obj2.dialog("close");
+document.getElementById("start_copying_button").style.visibility="visible";
+document.getElementById("start_uploading").style.visibility="hidden";
+$("#button_div").show();
+$("#change_selection_div").hide();
+document.getElementById("copyTo").style.visibility="visible";		
+document.getElementById("to_project").innerHTML='<span id="myId" style="text-decoration:underline;">Project</span>'+': '+to_place_name;
+
+}
+}
+
+to_url=data.resources.self.ref;
+redirection_url=data.resources.html.ref;
+dest_space_name=to_place_name;
+
+//changing the selection to 'Change Place'	   
+$("#to_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#to_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#to_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});		
+
+$("#up_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#up_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#up_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});
+
+if(sel_action_val=="uploadd")
+{
+$('#all_selected_items').css("margin-top", "80px");
+$('#selected_items').css("margin-top", "80px");
+$("#upTo").text("Upload this:").append('<br/>');
+document.getElementById("upTo").style.display="inline";
+$("#upTo").show();
+document.getElementById("up_select_items_button").style.display="inline";
+document.getElementById("del_select_items_button").style.display="inline";
+$("#up_select_items_button").show();
+$('#up_select_items_button').css("margin-top", "180px");
+$('#up_select_items_button').css("margin-left", "-80px");
+$("#del_select_items_button").hide();
+$("#change_selection_div").hide();
+$("#button_div").hide();
+$("#upShow").show();
+document.getElementById("up_place").style.display="inline";
+$("#up_place").show();
+document.getElementById("up_from_project").innerHTML='<span id="myId" style="text-decoration:underline;">Project</span>'+': '+to_place_name;
+$('#up_place').css("margin-top", "120px");
+$("#up_from_project").show();
+$("#up_from_group").hide();
+$("#up_from_space").hide();
+}
+else if(sel_action_val=="select_action")
+{
+document.getElementById("up_place").style.display="inline";
+//$("#stylized").hide();		
+$("#change_selection_div").hide();
+$("#showDiv").hide();
+$("#copyTo").hide();
+$("#upShow").hide();
+document.getElementById("upTo").style.display="inline";
+$("#upTo").hide();
+$("#up_place").hide();
+$("#upFrom").hide();
+$("#up_from_space").hide();
+$("#up_from_group").hide();
+$("#up_from_project").hide();
+}
+
+$("#to_space").hide();
+$("#to_group").hide();
+$("#to_project").show();
+} ),
+error : handleResponse  };
+
+if(to_place_name=='')
+{
+//document.getElementById("start_copying_button").style.visibility="hidden";	
+$("#button_div").hide();	
+//document.getElementById("copyTo").style.visibility="hidden";
+document.getElementById("copyTo").style.visibility="visible";
+//document.getElementById("to_project").innerHTML=msg2;
+document.getElementById("to_project").innerHTML='<span id="myId" style="text-decoration:underline;">Project</span>'+': '+dest_space_name;
+$("#to_place option").each(function() {
+if($(this).text() == 'Select Place') {
+$(this).attr('selected', 'selected'); 
+$('#to_place :selected').text('Change Place');	
+}
+else if($(this).text() == 'Change Place')
+{  
+$('#to_place option:[text="' + $(this).text() + '"]').attr('selected', true);  
+}
+});	
+}
+
+osapi.jive.corev3.places.requestPicker(params);
+}
+
+function getFiles(space_url)
+{
+//alert("inside getFiles");
+//alert("space_url inside getFiles: "+space_url);
+//console.log("space_url inside getFiles: "+space_url);
+osapi.jive.corev3.contents.get({
+type : 'file',
+fields : '@all',
+place : space_url
+}).execute(function(response) {
+//console.log("Files: "+JSON.stringify(response));
+
+var files = response.list;
+var postFiles;
+var files_length=response.list.length;
+//alert("files_length: "+files_length);
+
+if (files_length==0)
+{
+files_row='<table id="filesTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+				
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Files Found..!!</strong></td></tr>';
+}
+else
+{
+files_row='<table id="filesTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+
+'<tr>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: right;" valign="middle"><strong>'+'All<input type="checkbox" id="sel_all_files"  onclick="javascript:checkedAll(this.id);">'+'</strong></td>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 450px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Title</strong></td>'+
+'<td style="border:1px solid ;border: 1px solid #000000;width: 160px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Author</strong></td>'+
+'</tr>';
+
+
+$.each(files, function(index, group) {
+postFiles = {
+title : "",
+author : "",
+updated : "",
+fileUrl : ""
+}
+
+postFiles.title = group.subject;
+//alert("postFiles.title: "+postFiles.title);
+postFiles.author = group.author.name.formatted;
+//alert("postFiles.author: "+postFiles.author);
+postFiles.updated = group.updated;
+//alert("postFiles.updated: "+postFiles.updated);
+postFiles.fileUrl = group.resources.self.ref;
+//alert("postFiles.fileUrl: "+postFiles.fileUrl);
+//if(index=='')
+//alert("index files: "+index);
+
+files_row = files_row + '<tr>'+
+'<td style="border:1px ;border: 1px solid #000000;text-align:right;padding:2px;">'+'<input type="checkbox" name="file_cb" class="file_cb" onclick="javascript:checkUncheck(this.name);" value="'+postFiles.fileUrl+'">'+'</td>'+
+'<td style="border:1px ;border: 1px solid #000000;padding: 2px;">'+postFiles.title+'</td>'+
+'<td style="border:1px ;border: 1px solid #000000;padding: 2px;">'+postFiles.author+'</td>'+
+'</tr>';		
+});
+}
+files_row=files_row+'</table>';	
+document.getElementById("files_div").innerHTML=files_row;	
+
+});
+};
+
+function getBlogs(blog_url)
+{
+
+//alert("inside getFiles");
+//alert("blog_url inside getFiles: "+blog_url);
+//console.log("blog_url inside getFiles: "+blog_url);
+osapi.jive.corev3.contents.get({
+type : 'post',
+fields : '@all',
+place : blog_url
+}).execute(function(response) {
+//console.log("Files: "+JSON.stringify(response));
+
+var blogs = response.list;
+var postBlogs;
+var blogs_length=response.list.length;
+//alert("blogs_length: "+blogs_length);
+if(blogs_length==0)
+{
+blog_row='<table id="blogTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Blogs Found..!!</strong></td></tr>';
+}
+else
+{	
+blog_row='<table id="blogTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: right;" valign="middle"><strong>'+'All<input type="checkbox" id="sel_all_blogs"  onclick="javascript:checkedAll(this.id);">'+'</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 450px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Title</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 160px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Author</strong></th>'+
+'</tr>';
+
+$.each(blogs, function(index, group) {
+postBlogs = {
+title : "",
+author : "",
+updated : "",
+fileUrl : ""
+}
+
+postBlogs.title = group.subject;
+//alert("postBlogs.title: "+postBlogs.title);
+postBlogs.author = group.author.name.formatted;
+//alert("postBlogs.author: "+postBlogs.author);
+postBlogs.updated = group.updated;
+//alert("postBlogs.updated: "+postBlogs.updated);
+postBlogs.fileUrl = group.resources.self.ref;
+//alert("postBlogs.fileUrl: "+postBlogs.fileUrl);
+//if(index=='')
+//alert("index blogs: "+index);
+
+blog_row = blog_row + '<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: right;padding: 2px;">'+'<input type="checkbox" name="blog_cb" class="blog_cb" onclick="javascript:checkUncheck(this.name);" value="'+postBlogs.fileUrl+'">'+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postBlogs.title+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postBlogs.author+'</td>'+
+'</tr>';	
+});
+}
+blog_row=blog_row+'</table>';	
+document.getElementById("blog_div").innerHTML=blog_row;	
+
+});
+};
+
+
+function getDocs(space_url)
+{
+
+//alert("inside getDocs");
+//alert("space_url inside getDocs: "+space_url);
+//console.log("space_url inside getDocs: "+space_url);
+osapi.jive.corev3.documents.get ({
+fields : '@all',
+place : space_url
+}).execute(function(response) {
+//console.log("Documents: "+JSON.stringify(response));
+
+var documents = response.list;
+var postDoc;
+var docs_length=response.list.length;
+//alert("docs_length: "+docs_length);
+if (docs_length==0)
+{
+docs_row='<table id="docsTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Documents Found..!!</strong></td></tr>';
+}
+else
+{	
+docs_row='<table id="docsTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+
+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: right;" valign="middle"><strong>'+'All<input type="checkbox" id="sel_all_docs" onclick="javascript:checkedAll(this.id);">'+'</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 450px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Title</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 160px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Author</strong></th>'+
+'</tr>';
+
+$.each(documents, function(index, group) {
+postDoc = {
+title : "",
+author : "",
+updated : "",
+docUrl : ""
+}
+
+postDoc.title = group.subject;
+//alert("postDoc.title: "+postDoc.title);
+postDoc.author = group.author.name.formatted;
+//alert("postDoc.author: "+postDoc.author);
+postDoc.updated = group.updated;
+//alert("postDoc.updated: "+postDoc.updated);
+postDoc.docUrl = group.resources.self.ref;
+//alert("postDoc.fileUrl: "+postDoc.fileUrl);
+//if(index=='')
+//alert("index documents: "+index);
+
+docs_row = docs_row + '<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: right;padding: 2px;">'+'<input type="checkbox" name="doc_cb" class="doc_cb" onclick="javascript:checkUncheck(this.name);" value="'+postDoc.docUrl+'">'+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postDoc.title+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postDoc.author+'</td>'+
+'</tr>';
+
+});	
+}	
+docs_row=docs_row+'</table>';
+document.getElementById("docs_div").innerHTML=docs_row;
+});
+};
+
+function getDiscussions(space_url){
+
+
+osapi.jive.corev3.discussions.get ({
+fields : '@all',
+place : space_url
+}).execute(function(response) {
+//console.log("Discussions: "+JSON.stringify(response));
+
+var disc = response.list;
+var postDisc;
+var disc_length=response.list.length;
+//alert("disc_length: "+disc_length);
+if(disc_length==0)
+{
+disc_row='<table id="discTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Discussions Found..!!</strong></td></tr>';
+}
+else
+{
+disc_row='<table id="discTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+
+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: right;" valign="middle"><strong>'+'All<input type="checkbox" id="sel_all_disc"  onclick="javascript:checkedAll(this.id);">'+'</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 450px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Title</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 160px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Author</strong></th>'+
+'</tr>';
+
+$.each(disc, function(index, group) {
+postDisc = {
+title : "",
+author : "",
+updated : "",
+discUrl : ""
+}
+
+postDisc.title = group.subject;
+//alert("postFiles.title: "+postFiles.title);
+postDisc.author = group.author.name.formatted;
+//alert("postFiles.author: "+postFiles.author);
+postDisc.updated = group.updated;
+//alert("postFiles.updated: "+postFiles.updated);
+postDisc.discUrl = group.resources.self.ref;
+//alert("postFiles.fileUrl: "+postFiles.fileUrl);
+//if(index=='')
+//alert("index disc: "+index);
+
+disc_row = disc_row + '<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: right;padding: 2px;">'+'<input type="checkbox" name="disc_cb" class="disc_cb" onclick="javascript:checkUncheck(this.name);" value="'+postDisc.discUrl+'">'+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postDisc.title+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postDisc.author+'</td>'+
+'</tr>';	
+});
+}
+disc_row=disc_row+'</table>';	
+document.getElementById("disc_div").innerHTML=disc_row;	
+});
+
+};
+
+function getIdeas(space_url){
+
+
+osapi.jive.corev3.ideas.get ({
+fields : '@all',
+place : space_url
+}).execute(function(response) {
+//console.log("Ideas: "+JSON.stringify(response));
+
+var idea = response.list;
+var postIdea;
+var idea_length=response.list.length;
+//alert("idea_length: "+idea_length);
+if(idea_length==0)
+{
+idea_row='<table id="ideaTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+'<tr>'+
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Ideas Found..!!</strong></td></tr>';
+}
+else
+{
+idea_row='<table id="ideaTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: right;" valign="middle"><strong>'+'All<input type="checkbox" id="sel_all_ideas"  onclick="javascript:checkedAll(this.id);">'+'</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 450px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Title</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 160px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Author</strong></th>'+
+'</tr>';
+
+$.each(idea, function(index, group) {
+postIdea = {
+title : "",
+author : "",
+updated : "",
+ideaUrl : ""
+}
+
+postIdea.title = group.subject;
+//alert("postFiles.title: "+postFiles.title);
+postIdea.author = group.author.name.formatted;
+//alert("postFiles.author: "+postFiles.author);
+postIdea.updated = group.updated;
+//alert("postFiles.updated: "+postFiles.updated);
+postIdea.ideaUrl = group.resources.self.ref;
+//alert("postFiles.fileUrl: "+postFiles.fileUrl);
+//if(index=='')
+//alert("index idea: "+index);
+
+
+idea_row = idea_row + '<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: right;padding: 2px;">'+'<input type="checkbox" name="idea_cb" class="idea_cb" onclick="javascript:checkUncheck(this.name);" value="'+postIdea.ideaUrl+'">'+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postIdea.title+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postIdea.author+'</td>'+
+'</tr>';	
+});
+}
+idea_row=idea_row+'</table>';	
+document.getElementById("idea_div").innerHTML=idea_row;	
+});
+};
+
+function getPolls(space_url)
+{
+//alert("inside getPolls");
+//alert("space_url inside getPolls: "+space_url);
+//console.log("space_url inside getPolls: "+space_url);
+osapi.jive.corev3.polls.get({
+fields : '@all',
+place : space_url
+}).execute(function(response) {
+//console.log("Polls: "+JSON.stringify(response));
+
+var polls = response.list;
+//console.log ("Blogs: "+JSON.stringify(polls));
+var postPolls;
+var poll_length=response.list.length;
+//alert("poll_length: "+poll_length);
+if(poll_length==0)
+{
+poll_row='<table id="pollTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Polls Found..!!</strong></td></tr>';
+}
+else
+{	
+poll_row='<table id="pollTable" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 450px;">'+
+
+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: right;" valign="middle"><strong>'+'All<input type="checkbox" id="sel_all_polls"  onclick="javascript:checkedAll(this.id);">'+'</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 450px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Title</strong></th>'+
+'<td style="border:1px solid black;border: 1px solid #000000;width: 160px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>&nbsp; Author</strong></th>'+
+'</tr>';
+
+$.each(polls, function(index, group) {
+postPolls = {
+title : "",
+author : "",
+updated : "",
+fileUrl : ""
+}
+
+postPolls.title = group.subject;
+//alert("postPolls.title: "+postPolls.title);
+postPolls.author = group.author.name.formatted;
+//alert("postPolls.author: "+postPolls.author);
+postPolls.updated = group.updated;
+//alert("postPolls.updated: "+postPolls.updated);
+postPolls.fileUrl = group.resources.self.ref;
+//alert("postPolls.fileUrl: "+postPolls.fileUrl);
+//if(index=='')
+//alert("index polls: "+index);
+
+poll_row = poll_row + '<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: right;padding: 2px;">'+'<input type="checkbox" name="poll_cb" class="poll_cb" onclick="javascript:checkUncheck(this.name);" value="'+postPolls.fileUrl+'">'+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postPolls.title+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;padding: 2px;">'+postPolls.author+'</td>'+
+'</tr>';
+});
+}
+poll_row=poll_row+'</table>';	
+document.getElementById("poll_div").innerHTML=poll_row;	
+
+});
+};
+
+function checkedAll(selCheckId){
+//alert("selCheckId : "+selCheckId);
+var tab='';
+if(selCheckId=='sel_all_files')
+{
+tab = document.getElementById ("filesTable");
+}
+else if(selCheckId=='sel_all_docs')
+{
+tab = document.getElementById ("docsTable");
+}
+else if(selCheckId=='sel_all_disc')
+{
+tab = document.getElementById ("discTable");
+}
+else if(selCheckId=='sel_all_ideas')
+{
+tab = document.getElementById ("ideaTable");
+}else if(selCheckId=='sel_all_polls')
+{
+tab = document.getElementById ("pollTable");
+}else if(selCheckId=='sel_all_blogs')
+{
+tab = document.getElementById ("blogTable");
+}
+var elems = tab.getElementsByTagName ("input");
+var len = elems.length;
+var sel_all=document.getElementById(selCheckId);
+
+if(sel_all.checked==true)
+{
+//alert("checked");
+for ( var i = 0; i < len; i++ )
+{
+if ( elems[i].type == "checkbox" )
+{
+elems[i].checked = true;
+}
+}
+}
+else if(sel_all.checked==false)
+{
+//alert("not checked");
+for ( var i = 0; i < len; i++ )
+{
+if ( elems[i].type == "checkbox" )
+{
+elems[i].checked = false;
+}
+}
+}
+
+};
+
+function checkUncheck(name)
+{
+
+var id='';
+var mcb_id='';
+var check='';
+//alert(name);
+if(name=="file_cb")
+{
+id='sel_all_files';
+mcb_id='#'+id;
+name='.'+name;
+}else if(name=="doc_cb")
+{
+id='sel_all_docs';
+mcb_id='#'+id;
+name='.'+name;
+}else if(name=="disc_cb")
+{
+id='sel_all_disc';
+mcb_id='#'+id;
+name='.'+name;
+}else if(name=="idea_cb")
+{
+id='sel_all_ideas';
+mcb_id='#'+id;
+name='.'+name;
+}else if(name=="idea_cb")
+{
+id='sel_all_ideas';
+mcb_id='#'+id;
+name='.'+name;
+}else if(name=="poll_cb")
+{
+id='sel_all_polls';
+mcb_id='#'+id;
+name='.'+name;
+}
+else if(name=="blog_cb")
+{
+id='sel_all_blogs';
+mcb_id='#'+id;
+name='.'+name;
+}
+//alert(mcb_id);
+//alert(name);
+check=name+':checked';
+
+$(mcb_id).click(function () {
+$(name).attr('checked', this.checked);
+});
+
+$(name).click(function(){
+if($(name).length == $(check).length) {
+$(mcb_id).attr("checked", "checked");
+} else {
+$(mcb_id).removeAttr("checked");
+}
+});
+
+};
+
+function highlightTab()
+{
+$("#docs_tab").addClass("borderadd");
+$("#disc_tab").addClass("borderadd");
+$("#idea_tab").addClass("borderadd");
+$("#blog_tab").addClass("borderadd");
+$("#poll_tab").addClass("borderadd");
+$("li.active").removeClass("active");
+$("#files_tab").removeClass("borderadd");
+$("#files_tab").addClass("active");
+$('li').click(function() {
+$("li.active").addClass("borderadd");
+$("li.active").removeClass("active");
+$(this).addClass('active');
+$(this).removeClass('borderadd');
+});
+
+}
+
+function showTab(){
+
+$("#stylized").hide();
+$("#selection_menu").show();
+
+$("#files_div").show();
+
+$("#files_tab").click(function () {
+$("#files_div").show();
+$("#docs_div").hide();
+$("#disc_div").hide();
+$("#idea_div").hide();
+$("#poll_div").hide();
+$("#blog_div").hide();
+});	
+
+$("#docs_tab").click(function () {
+$("#files_div").hide();
+$("#docs_div").show();
+$("#disc_div").hide();
+$("#idea_div").hide();
+$("#poll_div").hide();
+$("#blog_div").hide();
+});	
+
+$("#disc_tab").click(function () {
+$("#files_div").hide();
+$("#docs_div").hide();
+$("#disc_div").show();
+$("#idea_div").hide();
+$("#poll_div").hide();
+$("#blog_div").hide();
+});	
+
+$("#idea_tab").click(function () {
+$("#files_div").hide();
+$("#docs_div").hide();
+$("#disc_div").hide();
+$("#idea_div").show();
+$("#poll_div").hide();
+$("#blog_div").hide();
+});
+
+$("#poll_tab").click(function () {
+$("#files_div").hide();
+$("#docs_div").hide();
+$("#disc_div").hide();
+$("#idea_div").hide();
+$("#poll_div").show();
+$("#blog_div").hide();
+});
+
+$("#blog_tab").click(function () {
+$("#files_div").hide();
+$("#docs_div").hide();
+$("#disc_div").hide();
+$("#idea_div").hide();
+$("#poll_div").hide();
+$("#blog_div").show();
+});
+};
+
+var all_selected=''; 
+
+function goBack(){
+all_selected='';
+//$('br + br').remove();
+$("#button_div").hide();
+document.getElementById("copyTo").style.visibility="visible";
+document.getElementById("start_copying_button").disabled = false;
+//$("#del_place").hide();
+$("#docs_div").hide();
+$("#files_div").hide();
+$("#disc_div").hide();
+$("#idea_div").hide();
+$("#poll_div").hide();
+$("#blog_div").hide();
+document.getElementById("del_select_items_button").style.display="inline";
+$("#del_select_items_button").hide();
+document.getElementById("up_select_items_button").style.display="inline";
+$("#up_select_items_button").hide();
+
+if(sel_action_val=="delete")
+{
+//$("#del_place").show();
+//alert("copy to");
+//$("#copyTo").text("Delete this:").append('<br/>');
+document.getElementById("start_copying_button").style.visibility="visible";
+document.getElementById("start_uploading").style.visibility="hidden";
+}
+
+
+$("#selection_menu").hide();
+
+$("#stylized").show();
+$("#change_selection_div").show();
+$("#change_contents").show();
+$("#start_copying_button").show();
+document.getElementById("start_uploading").style.visibility="hidden";
+
+all_selected='<TABLE id="all_selected_items" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 600px;">'
++'<col width="400px" /><col width="120px" /><col width="10px" />'
++'<tr>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 43px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>Title</strong></td>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 43px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>Author</strong></td>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 43px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>Type</strong></td>'+
+'</tr>';
+
+$('#filesTable input[type=checkbox]:checked').each(function() { 
+// alert ( $(this).val() );
+/*
+Grp_file_json = Grp_file_json+'{'+
+'"file_self_url": "'+$(this).val()+'"},';*/
+if($(this).val()!='on'){
+Grp_file_json = Grp_file_json+$(this).val()+';';
+
+
+var row = $(this).parent().parent();
+var rowcells = row.find('td');
+//alert(" rowcells1: "+rowcells[1].textContent);
+// alert(" rowcells2: "+rowcells[2].textContent);
+//alert(" rowcells3: "+rowcells[3].textContent);
+if(rowcells[1].textContent!='Title'){
+all_selected=all_selected+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[1].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[2].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">File</td>'+
+'</tr>';
+}   
+//console.log("Grp_file_json: "+Grp_file_json);
+}
+});
+
+$('#docsTable input[type=checkbox]:checked').each(function() { 
+
+//alert ( $(this).val() );
+/*Grp_doc_json = Grp_doc_json+'{'+
+'"document_self_url": "'+$(this).val()+'"},';*/
+if($(this).val()!='on'){
+Grp_doc_json = Grp_doc_json+$(this).val()+';';
+
+
+var row = $(this).parent().parent();
+var rowcells = row.find('td');
+//alert(" rowcells1: "+rowcells[1].textContent);
+// alert(" rowcells2: "+rowcells[2].textContent);
+//alert(" rowcells3: "+rowcells[3].textContent);
+if(rowcells[1].textContent!='Title'){
+all_selected=all_selected+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[1].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[2].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">Documents</td>'+
+'</tr>';
+}
+//console.log("Grp_doc_json: "+Grp_doc_json);
+}
+});
+
+$('#discTable input[type=checkbox]:checked').each(function() { 
+
+//alert ( $(this).val() );
+/*Grp_disc_json = Grp_disc_json+'{'+
+'"discussion_self_url": "'+$(this).val()+'"},';*/
+if($(this).val()!='on'){
+Grp_disc_json = Grp_disc_json+$(this).val()+';';
+
+var row = $(this).parent().parent();
+var rowcells = row.find('td');
+//alert(" rowcells1: "+rowcells[1].textContent);
+// alert(" rowcells2: "+rowcells[2].textContent);
+//alert(" rowcells3: "+rowcells[3].textContent);
+if(rowcells[1].textContent!='Title'){
+all_selected=all_selected+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[1].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[2].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">Discussions</td>'+
+'</tr>';
+}
+//console.log("Grp_disc_json: "+Grp_disc_json);
+}
+});
+
+$('#ideaTable input[type=checkbox]:checked').each(function() { 
+
+//alert ( $(this).val() );
+/*Grp_idea_json = Grp_idea_json+'{'+
+'"idea_self_url": "'+$(this).val()+'"},';*/
+if($(this).val()!='on'){
+Grp_idea_json = Grp_idea_json+$(this).val()+';';
+
+var row = $(this).parent().parent();
+var rowcells = row.find('td');
+//alert(" rowcells1: "+rowcells[1].textContent);
+// alert(" rowcells2: "+rowcells[2].textContent);
+//alert(" rowcells3: "+rowcells[3].textContent);
+if(rowcells[1].textContent!='Title'){
+all_selected=all_selected+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[1].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[2].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">Ideas</td>'+
+'</tr>';
+}
+//console.log("Grp_idea_json: "+Grp_idea_json);
+}
+});
+
+$('#pollTable input[type=checkbox]:checked').each(function() { 
+
+//alert ( $(this).val() );
+/*Grp_blog_json = Grp_blog_json+'{'+
+'"idea_self_url": "'+$(this).val()+'"},';*/
+if($(this).val()!='on'){
+Grp_poll_json = Grp_poll_json+$(this).val()+';';
+
+var row = $(this).parent().parent();
+var rowcells = row.find('td');
+//alert(" rowcells1: "+rowcells[1].textContent);
+//alert(" rowcells2: "+rowcells[2].textContent);
+//alert(" rowcells3: "+rowcells[3].textContent);
+if(rowcells[1].textContent!='Title'){
+all_selected=all_selected+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[1].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[2].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">Polls</td>'+
+'</tr>';
+}
+//console.log("Grp_blog_json: "+Grp_blog_json);
+}
+});
+
+$('#blogTable input[type=checkbox]:checked').each(function() { 
+
+//alert ( $(this).val() );
+/*Grp_blog_json = Grp_blog_json+'{'+
+'"idea_self_url": "'+$(this).val()+'"},';*/
+if($(this).val()!='on'){
+Grp_blog_json = Grp_blog_json+$(this).val()+';';
+
+var row = $(this).parent().parent();
+var rowcells = row.find('td');
+//alert(" rowcells1: "+rowcells[1].textContent);
+//alert(" rowcells2: "+rowcells[2].textContent);
+//alert(" rowcells3: "+rowcells[3].textContent);
+if(rowcells[1].textContent!='Title'){
+all_selected=all_selected+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[1].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+rowcells[2].textContent+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">Blogs</td>'+
+'</tr>';
+}
+//console.log("Grp_blog_json: "+Grp_blog_json);
+}
+});
+
+
+all_selected=all_selected+'</table>';
+//console.log(all_selected);
+
+document.getElementById("selected_items").innerHTML=all_selected;  
+var count = $('#all_selected_items tr').length;
+//alert(count);  
+
+if (count==1)
+{
+all_selected='<table name="all_selected_items" id="all_selected_items" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 600px;">'
++'<col width="400px" /><col width="120px" /><col width="10px" />'+
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Content Selected..!!</strong></td></tr></table>';
+document.getElementById("start_copying_button").disabled = true;
+document.getElementById("selected_items").innerHTML=all_selected;
+}
+
+};
+
+function startCopying(){
+$("#cmdu").show();
+$("#src_place").hide();
+$("#start_copying_button").hide();
+$("#change_contents").hide();
+$("#button_div").hide();
+$("#from_place").hide();
+$("#to_place").hide();
+
+//alert("startCopying");
+
+var iframe = '<iframe id="frame1" src = "" style="width:650px;height:90px;margin-top:0px;font-family:Tahoma"></iframe>';
+document.getElementById("selected_items").innerHTML=iframe;  
+$("#copyTo").text("Copying this:");
+
+dest_space_name=dest_space_name.toLowerCase();
+dest_space_name=dest_space_name.replace(/[^a-z0-9-\s]/gi, '').replace(/[_\s]/g, '-');
+
+var initialMsg='Please wait, initialising copying..';
+document.getElementById("frame1").contentDocument.body.style.fontFamily="Tahoma";	
+document.getElementById("frame1").contentDocument.body.style.fontSize = "12px";
+document.getElementById("frame1").contentDocument.body.style.color='Grey';
+document.getElementById("frame1").contentDocument.body.innerHTML = "Copying in Progress.<br>Please leave this window open until the copying process has been completed.<br><br><span id='mySpan' style='font-weight:bold;'>"+initialMsg.fontcolor("#3778C7")+"</span>";
+
+osapi.http.get({
+'href' : 'http://ec2-54-246-36-246.eu-west-1.compute.amazonaws.com:8080/AIDealRoom-CopyAppv1/AIServlet?srcgroup_place_url='+space_url+'&target_groupurl='+to_url+'&src_group_file='+Grp_file_json+'&src_group_document='+Grp_doc_json+'&src_idea='+Grp_idea_json+'&src_discussion='+Grp_disc_json+'&src_blog='+Grp_blog_json+'&src_poll='+Grp_poll_json+'&logged-user='+loggedUser+'&logged-userName='+loggedUserName+'&group-name='+dest_space_name,
+'format' : 'json',
+'authz' : 'signed'
+}).execute(refreshiframe);
+
+};
+
+var flag=false;
+
+function refreshiframe() 
+{ 
+flag=true;
+osapi.http.get({
+'href' : 'http://ec2-54-246-36-246.eu-west-1.compute.amazonaws.com:8080/AIDealRoom-CopyAppv1/LoggerServlet?logged-user='+loggedUser+'&logged-userName='+loggedUserName,
+'format' : 'text',
+'authz' : 'signed'
+}).execute(refreshFrameResponse);
+};
+
+
+function refreshFrameResponse(response) 
+{
+if(!flag)
+{
+refreshiframe();
+}
+setTimeout("refreshiframe()",1000); 	
+var str=response.content;
+var res='{ error: "Connect to /54.246.36.246:8080 timed out" }';
+var errorCode=str.indexOf(res);
+//alert("errorCode: "+errorCode);
+if(errorCode!=0)
+{
+document.getElementById("frame1").contentDocument.body.style.fontFamily="Tahoma";	
+document.getElementById("frame1").contentDocument.body.style.fontSize = "12px";
+document.getElementById("frame1").contentDocument.body.style.color='Grey';
+document.getElementById("frame1").contentDocument.body.innerHTML = "Copying in Progress.<br>Please leave this window open until the copying process has been completed.<br><br><span id='mySpan' style='font-weight:bold;'>"+str.fontcolor("#3778C7")+"</span>";
+
+var compare='You will be redirected to the "copy to" group.';
+
+var pos=str.indexOf(compare);
+//console.log("pos: "+pos+" "+str);
+if (pos!=-1)
+{
+//alert("redirecting....");
+document.getElementById("frame1").contentDocument.body.innerHTML = "Copying in Progress.<br>Please leave this window open until the copying process has been completed.<br><br><span id='mySpan' style='font-weight:bold;'>"+str.fontcolor("#3778C7")+"</span>";
+//setTimeout("refreshiframe()",1000); 
+$("#stylized").fadeOut(5000,function(){
+window.location = redirection_url;         
+
+});
+}
+//}	
+}
+else
+{
+var serverMsg = "Server is stopped/down, check with the administrator.";
+document.getElementById("frame1").contentDocument.body.innerHTML = "<br><br><span id='mySpan' style='font-weight:bold;'>"+serverMsg.fontcolor("#3778C7")+"</span>";
+}	
+}
+
+var uploadSelected='';
+
+function uploadFiles()
+{
+uploadSelected='';
+
+uploadSelected='<input  style="visibility:hidden" type="text" name="loggedUser" value="'+loggedUser+'">'+
+'<input  style="visibility:hidden" type="text" name="loggedUserName" value="'+loggedUserName+'">'+
+'<input  style="visibility:hidden" type="text" name="to_url" value="'+to_url+'">'+
+
+'<TABLE id="upload_selected_items" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 600px;">'
++'<col width="400px" /><col width="120px" /><col width="10px" />'
++'<tr>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 43px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>Name</strong></td>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 43px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>Size</strong></td>'+
+'<td style="border:1px ;border: 1px solid #000000;width: 43px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: left;" valign="middle"><strong>Description [optional]</strong></td>'+
+'</tr>';
+
+
+var files = $('#up_select_items_button').prop("files");
+var names = $.map(files, function(val) { return val.name; });
+for(var i=0;i<names.length;i++)
+{
+//alert("names: "+names[i]);
+var fileObject = document.getElementById('up_select_items_button').files[i];
+var fileName=fileObject.name;
+var fileSize=fileObject.size;
+var sizeInMB = (fileSize / (1024*1024)).toFixed(2);
+sizeInMB= sizeInMB +'MB';
+var fileDesc='Please enter your description here.';
+
+uploadSelected=uploadSelected+'<tr>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;"><input id="fileName'+i+'" size="45" type="text" name="fileName" value="'+fileName+'" onchange="javascript:getName(this,'+i+')"></td>'+
+'<td style="color:black; border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;">'+sizeInMB+'</td>'+
+'<td style="border:1px solid black;border: 1px solid #000000;text-align: left;padding: 2px;"><input id="fileDesc'+i+'" size="35" type="text" name="fileDesc" value="'+fileDesc+'" onchange="javascript:getDesc(this,'+i+')" onblur="javascript:clickrecall(this);" onclick="javascript:clickclear(this);" onfocus="javascript:clickclear(this);"  autocomplete="off" style="color:black;"></td>'+
+'</tr>';
+}
+
+uploadSelected=uploadSelected+'</table>';
+
+$("#change_selection_div").show();
+//$("#up_select_items_button").hide();
+$("#change_contents").hide();
+$("#start_copying_button").hide();
+document.getElementById("start_uploading").style.visibility="visible";	
+
+document.getElementById("selected_items").innerHTML=uploadSelected;  
+document.getElementById("form2").innerHTML=uploadSelected;  
+//console.log(uploadSelected);
+var count = $('#upload_selected_items tr').length;
+// count is taken as 2 because we are adding three dynamic textboxes in this table
+if (count==2)
+{
+uploadSelected='<table name="upload_selected_items" id="upload_selected_items" border="0" class="jiveBorder" jive-data-cell="{&quot;color&quot;:&quot;#575757&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;backgroundColor&quot;:&quot;transparent&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" jive-data-header="{&quot;color&quot;:&quot;#FFFFFF&quot;,&quot;backgroundColor&quot;:&quot;#6690BC&quot;,&quot;textAlign&quot;:&quot;left&quot;,&quot;padding&quot;:&quot;2&quot;,&quot;fontFamily&quot;:&quot;arial,helvetica,sans-serif&quot;,&quot;verticalAlign&quot;:&quot;baseline&quot;}" style="border: 1px solid #000000; width: 600px;">'
++'<col width="400px" /><col width="120px" /><col width="10px" />'+
+'<tr><td colspan="4" style="border:1px ;border: 1px solid #000000;width: 60px;padding: 2px;color: #ffffff;background-color: #6690bc;text-align: center;" valign="middle"><strong>No Content Selected..!!</strong></td></tr></table>';
+document.getElementById("start_copying_button").disabled = true;
+document.getElementById("start_uploading").disabled = true;
+document.getElementById("selected_items").innerHTML=uploadSelected;
+}
+$('#up_select_items_button').css("margin-top", "321px");
+$('#up_select_items_button').css("margin-left", "-320px");
+}
+
+function clickclear(thisfield) {
+//alert("click clear");
+if (thisfield.value == 'Please enter your description here.') {
+thisfield.value = "";
+thisfield.color="black";
+}
+
+}
+
+function clickrecall(thisfield) {
+//alert("click recalls");
+if (thisfield.value == "") {
+thisfield.value = 'Please enter your description here.';
+}
+
+}
+
+function getName(data,counter){
+//alert("val: "+data.value+ " counter : "+counter);
+var id = 'fileName'+counter;
+//alert("id: "+id);
+document.getElementById(id).value=data.value;
+//alert("answer: "+document.getElementById(id).value);
+}
+function getDesc(data,counter){
+//alert("val: "+data.value+ " counter : "+counter);
+var id = 'fileDesc'+counter;
+//alert("id: "+id);
+
+if(data.value!='Please enter your description here.')
+document.getElementById(id).value=data.value;
+else
+document.getElementById(id).value='';
+//alert("answer: "+document.getElementById(id).value);
+}
+
+function startUploading(){
+$("#cmdu").show();
+$("#src_place").hide();
+var files = $('#up_select_items_button').prop("files");
+var names = $.map(files, function(val) { return val.name; });
+for(var i=0;i<names.length;i++)
+{
+var val=document.getElementById('fileDesc'+i).value;
+if(val=='Please enter your description here.')
+document.getElementById('fileDesc'+i).value='';
+}
+
+$("#up_place").hide();
+$("#upTo").text("Uploading this:");
+var iframe = '<iframe id="frame1" src = "" style="width:650px;height:90px;margin-top:0px;font-family:Tahoma"></iframe>';
+document.getElementById("selected_items").innerHTML=iframe;  
+
+//var initialMsg='Initializing the upload of your files... (please wait, you will be redirected later)';
+var initialMsg1='Your files are now being uploaded in the background.<br/>';
+var initialMsg2='You can close this window or wait until you will be redirected to the <a href="'+redirection_url+'/content" >content overview page</a>.<br/>'
+
+document.getElementById("frame1").contentDocument.body.style.fontFamily="Tahoma";	
+document.getElementById("frame1").contentDocument.body.style.fontSize = "12px";
+document.getElementById("frame1").contentDocument.body.style.color='Grey';
+document.getElementById("frame1").contentDocument.body.innerHTML = "<span id='mySpan' style='font-family:Tahoma;font-size:12px;font-weight:bold;'>"+initialMsg1.fontcolor("#3778C7")+"</span>"+"They will be available in the <a style='font-weight:bold;' href='"+redirection_url+"'>upload place</a> in a short time.<br><br><span id='mySpan' style='font-weight:bold;'>"+initialMsg2.fontcolor("#3778C7")+"</span>The redirect will be executed once the upload of all files is complete.";
+
+//alert(document.getElementById("fileName").value);
+
+document.getElementById('redirectVal').value=redirection_url;
+
+//alert("redirect value ="+document.getElementById('redirectVal').value);
+document.getElementById("form2").submit();
+//console.log(redirection_url); 
+/*$("#stylized").fadeOut(5000,function(){
+window.location = redirection_url;   
+});*/
+
+}
+
+var flag=false;
+
+function uprefreshiframe() 
+{ 
+
+//console.log("Calling ........");
+flag=true;
+
+osapi.http.get({
+'href' : 'http://ec2-54-246-36-246.eu-west-1.compute.amazonaws.com:8080/AIDealRoom-CopyAppv1/LoggerServlet?logged-user='+loggedUser+'&logged-userName='+loggedUserName,
+'format' : 'text',
+'authz' : 'signed'
+}).execute(uprefreshFrameResponse);
+};
+
+
+function uprefreshFrameResponse(response) 
+{
+
+if(!flag)
+{
+uprefreshiframe();
+}
+setTimeout("uprefreshiframe()",1000); 	
+//alert("response :"+JSON.stringify(response));
+var str=response.content;
+//alert("str: "+str);
+var res='{ error: "Connect to /54.246.36.246:8080 timed out" }';
+var errorCode=str.indexOf(res);
+if(errorCode!=0)
+{
+document.getElementById("frame1").contentDocument.body.style.fontFamily="Tahoma";	
+document.getElementById("frame1").contentDocument.body.style.fontSize = "12px";
+document.getElementById("frame1").contentDocument.body.style.color='Grey';
+document.getElementById("frame1").contentDocument.body.innerHTML = "Upload in Progress.<br>Please leave this window open until the upload process has completed.<br><br><span id='mySpan' style='font-weight:bold;'>"+str.fontcolor("#3778C7")+"</span>";
+
+var compare='You will be redirected to the "upload to" place.';
+
+var pos=str.indexOf(compare);
+//console.log("pos: "+pos+" "+str);
+if (pos!=-1)
+{
+//alert("redirecting....");
+document.getElementById("frame1").contentDocument.body.innerHTML = "Upload in Progress.<br>Please leave this window open until the upload process has completed.<br><br><span id='mySpan' style='font-weight:bold;'>"+str.fontcolor("#3778C7")+"</span>";
+//setTimeout("uprefreshiframe()",1000); 
+$("#stylized").fadeOut(5000,function(){
+window.location = redirection_url;   
+});
+}
+//}	
+}
+else
+{
+var serverMsg = "Server is stopped/down, check with the administrator.";
+document.getElementById("frame1").contentDocument.body.innerHTML = "<br><br><span id='mySpan' style='font-weight:bold;'>"+serverMsg.fontcolor("#3778C7")+"</span>";
+}	
+}
+
+function startMoving(){
+$("#cmdu").show();
+$("#src_place").hide();
+$("#from_place").hide();
+$("#to_place").hide();
+$("#start_copying_button").hide();
+$("#change_contents").hide();
+$("#button_div").hide();
+//alert("startMoving");
+$("#copyTo").text("Moving this:");
+
+
+movendelete('move',space_url,to_url,Grp_file_json,Grp_doc_json,Grp_disc_json,Grp_idea_json,Grp_poll_json,Grp_blog_json,dest_space_name,redirection_url,source_html_url,src_space_name);
+
+
+};
+
+function startDeleting(){
+$("#cmdu").show();
+$("#src_place").hide();
+$("#start_copying_button").hide();
+$("#change_contents").hide();
+$("#button_div").hide();
+$("#del_place").hide();
+//alert("startDeleting");
+$("#deleteTo").text("Deleting this:");
+//alert(src_space_name);
+
+movendelete('delete',space_url,to_url,Grp_file_json,Grp_doc_json,Grp_disc_json,Grp_idea_json,Grp_poll_json,Grp_blog_json,'test_name','test_url',source_html_url,src_space_name);
+
+};
+
+</script>
+</head>
+
+<body id="maskLoad" style="text-align: center" onLoad="onPageLoad()">
+<div id="stylized" class="myform" style="font-family:Tahoma; width:650px; height:420px;margin-top:70px;">
+<table width="600">
+<tr>
+<td colspan="2"><div style="text-align:center;width:600px;height:25px;font-size:15px;font-weight:bold;">Click Flows App</div></td></tr>
+<tr>
+<td style="width:350px;">
+<label style="margin-left:239px;width:130px;text-align:center;align:center;">
+Select Bulk Action:
+</label>
+<br/><br/>
+</td>
+</tr>
+<tr>
+<td style="width:350px;">
+<span id ="cmdu" style="display:none;margin-left:250px;align:center;"></span>
+<select name="source_place" id="src_place" onchange="javascript:selected_action();" style="margin-left:250px;align:center;">  
+<option value="select_action">Select Action</option>
+<option value="copy">Copy</option>
+<option value="move">Move</option>
+<option value="delete">Delete</option>
+<option value="uploadd">Upload</option>
+</select> 
+</td>
+</tr>
+</tr>
+<tbody id="showDiv" style="display:none;">
+<tr>
+<td style="width:350px;">
+<label id="from_label" style="margin-left:100px;width:100px;text-align:center;align:left;">
+Copy From:
+</label>
+</td>
+<td>
+<label id="to_label" style="width:100px;text-align:center;align:left;">
+Copy To:
+</label>
+</td>
+</tr>
+<tr>
+<td colspan="2"><br/>
+</td></tr>
+<tr>
+<td>
+<label id="from_space" style="margin-left:100px;font-weight:normal;text-align:left;display:none;padding-top:10px;">Copy From Space</label>
+<label id="from_group" style="margin-left:100px;font-weight:normal;text-align:left;display:none;padding-top:10px;">Copy From Group</label>
+<label id="from_project" style="margin-left:100px;font-weight:normal;text-align:left;display:none;padding-top:10px;">Copy From Project</label></td>
+<td>
+<label id="to_space" style="font-weight:normal;display:none;text-align:left;padding-top:10px;">Copy To Space</label>
+<label id="to_group" style="font-weight:normal;display:none;text-align:left;padding-top:10px;">Copy To Group</label>
+<label id="to_project" style="font-weight:normal;display:none;text-align:left;padding-top:10px;">Copy To Project</label>
+</td>
+</tr>
+
+<tr>
+<td>
+<br/>
+<select name="source_place" id="from_place" onchange="javascript:fromPlace();" style="margin-left:100px;">  
+<option value="select_one">Select Place</option>
+<option value="select_space">Select Space</option>
+<option value="select_group">Select Group</option>
+<option value="select_project">Select Project</option>
+</select> 
+
+</td>
+<td>
+<br/>
+<select name="source_place" id="to_place" onchange="javascript:toPlace();">  
+<option value="select_to">Select Place</option>
+<option value="to_space">Select Space</option>
+<option value="to_group">Select Group</option>
+<option value="to_project">Select Project</option>
+</select>
+</td>
+</tr>
+</tbody>
+
+<div id="delShow">
+<label id ="deleteFrom" style="display:none;margin-left:-126px;position:absolute; margin-top:75px;"><br/>Delete From:</label>
+<tr>
+<tr>
+<label id="del_from_space" style="margin-left:230px;position:absolute; margin-top:110px;font-weight:normal;text-align:center;display:none;">Delete From Space</label>
+<label id="del_from_group" style="margin-left:230px;position:absolute; margin-top:110px;font-weight:normal;text-align:center;display:none;">Delete From Group</label>
+<label id="del_from_project" style="margin-left:230px;position:absolute; margin-top:110px;font-weight:normal;text-align:center;display:none;">Delete From Project</label>
+</tr>
+<td>
+<br/>
+<select name="del_place" id="del_place" onchange="javascript:delFromPlace();" 
+style="display:none;margin-left:-80px;position:absolute; margin-top:110px;">
+<option value="select_one">Select Place</option>
+<option value="select_space">Select Space</option>
+<option value="select_group">Select Group</option>
+<option value="select_project">Select Project</option>
+</select> 
+</td>
+</tr>
+<tr>
+<span id ="deleteTo" style="display:none;margin-left:-60px;font-weight:bold;position:absolute; margin-top:160px;"></span>
+</tr>
+<tr>
+<input type="button" id="del_select_items_button" value="Select Contents" name="select_items" style="display:none;margin-left:-86px;font-weight:bold;position:absolute; margin-top:190px;" onclick="javascript:showTab();javascript:highlightTab();"/>
+</tr>
+</div>
+
+<div id="upShow">
+<label id ="upFrom" style="display:none;margin-left:-135px;position:absolute; margin-top:60px;"><br/>Upload To:</label>
+<tr>
+<tr>
+<label id="up_from_space" style="margin-left:230px;position:absolute; margin-top:100px;font-weight:normal;text-align:center;display:none;">Upload to Space</label>
+<label id="up_from_group" style="margin-left:230px;position:absolute; margin-top:100px;font-weight:normal;text-align:center;display:none;">Upload to Group</label>
+<label id="up_from_project" style="margin-left:230px;position:absolute; margin-top:100px;font-weight:normal;text-align:center;display:none;">Upload to Project</label>
+</tr>
+<td>
+<br/>
+<select name="up_place" id="up_place" onchange="javascript:upFromPlace();" 
+style="display:none;margin-left:-80px;position:absolute; margin-top:90px;">
+<option value="select_one">Select Place</option>
+<option value="select_space">Select Space</option>
+<option value="select_group">Select Group</option>
+<option value="select_project">Select Project</option>
+</select> 
+</td>
+</tr>
+<tr>
+<span id ="upTo" style="display:none;margin-left:-60px;font-weight:bold;position:absolute; margin-top:150px;"></span>
+</tr>
+<tr>
+<form id = "form2" action="http://ec2-54-246-36-246.eu-west-1.compute.amazonaws.com:8080/AIDealRoom-CopyAppv1/FileUploadServletExample" enctype="multipart/form-data" method="POST">
+<input type="hidden" name="h1" value="asdfsdf"/>
+<input type="file" id="up_select_items_button" name="files[]" multiple style="display:none;margin-left:-80px;font-weight:bold;position:absolute; margin-top:190px;" onchange="javascript:uploadFiles();"/>
+</form >
+</tr>
+</div>
+<tr>
+<div>
+</div>
+</tr>
+
+<tr>
+<td colspan="2">
+<br/>
+<span id ="copyTo" style="text-align:left;font-weight:bold;margin-left:255px;"></span><br/>
+</td>
+</tr>
+
+<tr>
+<td colspan="2">
+<div id="button_div" style="display:none;font-family:Tahoma;overflow-y:auto;height:150px;">
+<input type="button" id="select_items_button" value="Select Contents" name="select_items" style="margin-left:220px;float:left;" onclick="javascript:showTab();javascript:highlightTab();"/>
+</div>
+<div id="change_selection_div" style="width:650px;display:none;font-family:Tahoma;margin-left:5px;">
+<br/>
+<div id="selected_items" style="margin-top:60px;font-family:Tahoma;overflow-y:auto;height:130px;">
+</div>
+<div>
+&nbsp;
+&nbsp;
+</div>
+<div id="newUpSel" style="float: left">
+<input type="button" value="Change Contents" id="change_contents" name="change_selected" style="float:left;" onclick="javascript:showTab();javascript:highlightTab();"/>
+<input type="button" id="start_copying_button" style="margin-left:100px;visibility:hidden; float:left" value="Start Copying" name="start_copying"/>
+<input type="button" id="start_uploading" style="margin-left:255px;visibility:hidden; float:left" value="Start Uploading" name="start_uploading" onclick="javascript:startUploading();"/>
+<br></br>
+
+</div>
+</div>
+</td>
+</tr>
+</table>
+
+</div>
+
+<div id="selection_menu" class="myform" style="
+display:box;
+box-pack:center;
+box-align:center;
+border:1px solid black;
+border-radius: 20px;
+-moz-border-radius: 20px;
+-webkit-border-radius: 20px;
+text-align: center;font-family:Tahoma;display:none;width:650px;height:420px;margin-top:70px;text-align:center;">
+<tr>
+<td>
+<ul style="align:left;text-align:left;">
+<li id="files_tab" style="margin-left:110px;"><a href="#">Files</a></li>
+<li id="docs_tab" style="margin-left:10px;"><a href="#">Documents</a></li>
+<li id="disc_tab" style="margin-left:10px;"><a href="#">Discussions</a></li>
+<li id="idea_tab" style="margin-left:10px;"><a href="#">Ideas</a></li>
+<li id="blog_tab" style="margin-left:10px;"><a href="#">Blogs</a></li>
+<li id="poll_tab" style="margin-left:10px;"><a href="#">Polls</a></li>
+</ul>
+</td>
+</tr>
+
+<tr>
+<div id="files_div"  class="myform" style="margin-left:60px;width:500px;font-family:Tahoma;display:none; overflow-y:auto;height:310px;">
+</div>
+
+<div id="docs_div" class="myform" style="margin-left:60px;width:500px;font-family:Tahoma;display:none; overflow-y:auto;height:310px;">
+</div>
+
+<div id="disc_div" class="myform" style="margin-left:60px;width:500px;font-family:Tahoma;display:none; overflow-y:auto;height:310px;">
+</div>
+
+<div id="idea_div" class="myform" style="margin-left:60px;width:500px;font-family:Tahoma;display:none; overflow-y:auto;height:310px;">
+</div>
+<div id="blog_div" class="myform" style="margin-left:60px;width:500px;font-family:Tahoma;display:none; overflow-y:auto;height:310px;">
+</div>
+<div id="poll_div" class="myform" style="margin-left:60px;width:500px;font-family:Tahoma;display:none; overflow-y:auto;height:310px;">
+</div>
+</tr>
+<div>
+<tr>
+&nbsp;
+</tr>
+<tr>
+&nbsp;
+</tr>
+</div>
+<tr>
+<input type="button" value="Apply Selection" name="apply_selection" onClick="javascript:goBack();">
+</tr>
+</div>
+
+<div id="dialog" title="Same Place Error:" style="display:none;">
+The "copy from" place has to be different from the "copy to" place.
+</div>
+
+<div id="dialogMove" title="Same Place Error:" style="display:none;">
+The "move from" place has to be different from the "move to" place.
+</div>
+
+<div id="footer" style="font-family:Tahoma">&copy; Accenture 2012-13</div>
+
+<style> 
+.borderadd 
+{
+border-radius: 4px;
+-moz-border-radius: 4px;
+-webkit-border-radius: 4px;
+border: solid;
+border-width: 1px 1px 1px 1px;
+padding: 2px;
+}
+#selection_menu li {
+
+display: inline;
+font-size: 15px;
+font-weight: bold;
+font-color: black;
+}
+#selection_menu li.active a {
+
+border-radius: 6px;
+-moz-border-radius: 6px;
+-webkit-border-radius: 6px;
+display: inline;
+border: solid;
+border-width: 3px 3px 3px 3px;
+border-color: #3778C7;
+font-size: 15px;
+font-weight: bold;
+font-color: #3778C7;
+padding: 2px;
+}
+</style>
+
+</body>
+</html>
