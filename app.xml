@@ -33,5 +33,5 @@
 		
     </ModulePrefs>
 	
-    <Content view="home, canvas" type="html" href="http://bit.ly/128y7Tz" preferred_height="600" preferred_width="800"/>
+    <Content view="home, canvas" type="html" href="https://raw.github.com/suresh548/test-app/master/dealroom.htm" preferred_height="600" preferred_width="800"/>
 </Module>
