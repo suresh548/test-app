@@ -1199,12 +1199,54 @@ body .ui-tooltip {
 <div id="accordion">
 	<h3>Copy</h3>
 	<div>
-		<p>
-		Mauris mauris ante, blandit et, ultrices a, suscipit eget, quam. Integer
-		ut neque. Vivamus nisi metus, molestie vel, gravida in, condimentum sit
-		amet, nunc. Nam a nibh. Donec suscipit eros. Nam mi. Proin viverra leo ut
-		odio. Curabitur malesuada. Vestibulum a velit eu ante scelerisque vulputate.
-		</p>
+		<tr>
+<td style="width:350px;">
+<label id="from_label" style="margin-left:100px;width:100px;text-align:center;align:left;">
+Copy From:
+</label>
+</td>
+<td>
+<label id="to_label" style="width:100px;text-align:center;align:left;">
+Copy To:
+</label>
+</td>
+</tr>
+<tr>
+<td colspan="2"><br/>
+</td></tr>
+<tr>
+<td>
+<label id="from_space" style="width:250px;margin-left:100px;font-weight:normal;text-align:left;display:none;padding-top:10px;">Copy From Space</label>
+<label id="from_group" style="width:250px;margin-left:100px;font-weight:normal;text-align:left;display:none;padding-top:10px;">Copy From Group</label>
+<label id="from_project" style="width:250px;margin-left:100px;font-weight:normal;text-align:left;display:none;padding-top:10px;">Copy From Project</label></td>
+<td>
+<label id="to_space" style="width:250px;font-weight:normal;display:none;text-align:left;padding-top:10px;">Copy To Space</label>
+<label id="to_group" style="width:250px;font-weight:normal;display:none;text-align:left;padding-top:10px;">Copy To Group</label>
+<label id="to_project" style="width:250px;font-weight:normal;display:none;text-align:left;padding-top:10px;">Copy To Project</label>
+</td>
+</tr>
+
+<tr>
+<td>
+<br/>
+<select name="source_place" id="from_place" onchange="javascript:fromPlace();" style="margin-left:100px;">  
+<option value="select_one">Select Place</option>
+<option value="select_space">Select Space</option>
+<option value="select_group">Select Group</option>
+<option value="select_project">Select Project</option>
+</select> 
+
+</td>
+<td>
+<br/>
+<select name="source_place" id="to_place" onchange="javascript:toPlace();">  
+<option value="select_to">Select Place</option>
+<option value="to_space">Select Space</option>
+<option value="to_group">Select Group</option>
+<option value="to_project">Select Project</option>
+</select>
+</td>
+</tr>
 	</div>
 	<h3>Move</h3>
 	<div>
