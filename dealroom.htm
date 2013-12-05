@@ -46,7 +46,16 @@
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
 
+ <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">
 
+  <script>
+  $(function() {
+    $( "#accordion" ).accordion();
+  });
+  </script>
 </head>
 
 <body id="maskLoad" style="text-align: center" onLoad="onPageLoad()">
@@ -62,6 +71,7 @@ Select Bulk Action:
 <br/><br/>
 </td>
 </tr>
+<div id="accordion">
 <tr>
 <td style="width:350px;">
 <span id ="cmdu" style="display:none;margin-left:250px;align:center;"></span>
@@ -77,6 +87,7 @@ Select Bulk Action:
 </select> 
 </td>
 </tr>
+</div>
 </tr>
 <tbody id="showDiv" style="display:none;">
 <tr>
