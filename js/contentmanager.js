@@ -880,7 +880,7 @@ function fromPlace() {
         fromProjectRequest();
         document.getElementById("copyTo").style.visibility = "hidden";
     } else if (from_sel_place == "select_one") {
-        document.getElementById("start_copying_button").style.visibility = "hidden";
+       // document.getElementById("start_copying_button").style.visibility = "hidden";
         $("#button_div").hide();
         document.getElementById("copyTo").style.visibility = "hidden";
     }
