@@ -854,7 +854,7 @@ function fromPlace() {
         $("#change_contents").hide();
         $("#start_copying_button").hide();
         fromSpaceRequest();
-        document.getElementById("copyTo").style.visibility = "hidden";
+       // document.getElementById("copyTo").style.visibility = "hidden";
 
     } else if (from_sel_place == "select_group") {
         src_space_name = '';
