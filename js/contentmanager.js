@@ -866,7 +866,7 @@ function fromPlace() {
         $("#change_contents").hide();
         $("#start_copying_button").hide();
         fromGroupRequest();
-        document.getElementById("copyTo").style.visibility = "hidden";
+        //document.getElementById("copyTo").style.visibility = "hidden";
 
     } else if (from_sel_place == "select_project") {
         src_space_name = '';
@@ -878,11 +878,11 @@ function fromPlace() {
         $("#change_contents").hide();
         $("#start_copying_button").hide();
         fromProjectRequest();
-        document.getElementById("copyTo").style.visibility = "hidden";
+        //document.getElementById("copyTo").style.visibility = "hidden";
     } else if (from_sel_place == "select_one") {
        // document.getElementById("start_copying_button").style.visibility = "hidden";
         $("#button_div").hide();
-        document.getElementById("copyTo").style.visibility = "hidden";
+        //document.getElementById("copyTo").style.visibility = "hidden";
     }
 }
 
