@@ -840,6 +840,7 @@ function selected_action() {
 	functionality : Upon Selecting place the combobox changes to "change place".
 */
 function fromPlace() {
+alert("hi");
     // Identifies which space/group/project the user  has chosen the content to copy/move and calls the relevant method.
     var from_place = document.getElementById("from_place");
     var from_sel_place = from_place.options[from_place.selectedIndex].value;
