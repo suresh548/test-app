@@ -1699,9 +1699,9 @@ function toSpaceRequest() {
                         $("#dialog").show();
                         $("#dialog").dialog();
                     }
-                    //document.getElementById("start_copying_button").style.visibility = "hidden";
+                    document.getElementById("start_copying_button").style.visibility = "hidden";
                     $("#button_div").hide();
-                   // document.getElementById("copyTo").style.visibility = "hidden";
+                    document.getElementById("copyTo").style.visibility = "hidden";
                     document.getElementById("to_space").innerHTML = msg2;
                 } else {
                     if (sel_action_val == 'copy')
@@ -1713,12 +1713,12 @@ function toSpaceRequest() {
                     dialog_obj.dialog("close");
                     var dialog_obj2 = $("#dialogMove");
                     dialog_obj2.dialog("close");
-                   // document.getElementById("start_copying_button").style.visibility = "visible";
+                    document.getElementById("start_copying_button").style.visibility = "visible";
                     $('#select_items_button').show();
-                    //document.getElementById("start_uploading").style.visibility = "hidden";
+                    document.getElementById("start_uploading").style.visibility = "hidden";
                     $("#button_div").show();
                     $("#change_selection_div").hide();
-                    //document.getElementById("copyTo").style.visibility = "visible";
+                    document.getElementById("copyTo").style.visibility = "visible";
                     document.getElementById("to_space").innerHTML = '<span id="myId" style="text-decoration:underline;">Space</span>' + ': ' + to_place_name;
                 }
             }
@@ -1837,9 +1837,9 @@ function toGroupRequest() {
                         $("#dialog").show();
                         $("#dialog").dialog();
                     }
-                    document.getElementById("start_copying_button").style.visibility = "hidden";
+                    //document.getElementById("start_copying_button").style.visibility = "hidden";
                     $("#button_div").hide();
-                    document.getElementById("copyTo").style.visibility = "hidden";
+                    //document.getElementById("copyTo").style.visibility = "hidden";
                     document.getElementById("to_group").innerHTML = msg2;
                 } else {
                     if (sel_action_val == 'copy')
@@ -1852,12 +1852,12 @@ function toGroupRequest() {
                     var dialog_obj2 = $("#dialogMove");
                     dialog_obj2.dialog("close");
                     document.getElementById("to_place").disabled = false;
-                    document.getElementById("start_copying_button").style.visibility = "visible";
-                    document.getElementById("start_uploading").style.visibility = "hidden";
+                    //document.getElementById("start_copying_button").style.visibility = "visible";
+                    //document.getElementById("start_uploading").style.visibility = "hidden";
                     $("#button_div").show();
                     $("#change_selection_div").hide();
                     $('#select_items_button').show();
-                    document.getElementById("copyTo").style.visibility = "visible";
+                    //document.getElementById("copyTo").style.visibility = "visible";
                     document.getElementById("to_group").innerHTML = '<span id="myId" style="text-decoration:underline;">Group</span>' + ': ' + to_place_name;
                 }
             }
