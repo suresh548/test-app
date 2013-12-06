@@ -1436,9 +1436,9 @@ function fromGroupRequest() {
     if (from_place_name == '') {
         // actions if the source place is empty
         document.getElementById("to_place").disabled = true;
-        document.getElementById("start_copying_button").style.visibility = "hidden";
+       // document.getElementById("start_copying_button").style.visibility = "hidden";
         $("#button_div").hide();
-        document.getElementById("copyTo").style.visibility = "hidden";
+       // document.getElementById("copyTo").style.visibility = "hidden";
         document.getElementById("from_group").innerHTML = msg2;
     }
 
