@@ -854,7 +854,7 @@ function fromPlace() {
         $("#change_contents").hide();
         $("#start_copying_button").hide();
         fromSpaceRequest();
-       // document.getElementById("copyTo").style.visibility = "hidden";
+        document.getElementById("copyTo").style.visibility = "hidden";
 
     } else if (from_sel_place == "select_group") {
         src_space_name = '';
@@ -866,7 +866,7 @@ function fromPlace() {
         $("#change_contents").hide();
         $("#start_copying_button").hide();
         fromGroupRequest();
-        //document.getElementById("copyTo").style.visibility = "hidden";
+        document.getElementById("copyTo").style.visibility = "hidden";
 
     } else if (from_sel_place == "select_project") {
         src_space_name = '';
@@ -878,11 +878,11 @@ function fromPlace() {
         $("#change_contents").hide();
         $("#start_copying_button").hide();
         fromProjectRequest();
-        //document.getElementById("copyTo").style.visibility = "hidden";
+        document.getElementById("copyTo").style.visibility = "hidden";
     } else if (from_sel_place == "select_one") {
-       // document.getElementById("start_copying_button").style.visibility = "hidden";
+        document.getElementById("start_copying_button").style.visibility = "hidden";
         $("#button_div").hide();
-        //document.getElementById("copyTo").style.visibility = "hidden";
+        document.getElementById("copyTo").style.visibility = "hidden";
     }
 }
 
@@ -1436,9 +1436,9 @@ function fromGroupRequest() {
     if (from_place_name == '') {
         // actions if the source place is empty
         document.getElementById("to_place").disabled = true;
-       // document.getElementById("start_copying_button").style.visibility = "hidden";
+        document.getElementById("start_copying_button").style.visibility = "hidden";
         $("#button_div").hide();
-       // document.getElementById("copyTo").style.visibility = "hidden";
+        document.getElementById("copyTo").style.visibility = "hidden";
         document.getElementById("from_group").innerHTML = msg2;
     }
 
@@ -1699,9 +1699,9 @@ function toSpaceRequest() {
                         $("#dialog").show();
                         $("#dialog").dialog();
                     }
-                    //document.getElementById("start_copying_button").style.visibility = "hidden";
+                    document.getElementById("start_copying_button").style.visibility = "hidden";
                     $("#button_div").hide();
-                    //document.getElementById("copyTo").style.visibility = "hidden";
+                    document.getElementById("copyTo").style.visibility = "hidden";
                     document.getElementById("to_space").innerHTML = msg2;
                 } else {
                     if (sel_action_val == 'copy')
@@ -1713,12 +1713,12 @@ function toSpaceRequest() {
                     dialog_obj.dialog("close");
                     var dialog_obj2 = $("#dialogMove");
                     dialog_obj2.dialog("close");
-                   // document.getElementById("start_copying_button").style.visibility = "visible";
+                    document.getElementById("start_copying_button").style.visibility = "visible";
                     $('#select_items_button').show();
-                    //document.getElementById("start_uploading").style.visibility = "hidden";
+                    document.getElementById("start_uploading").style.visibility = "hidden";
                     $("#button_div").show();
                     $("#change_selection_div").hide();
-                    //document.getElementById("copyTo").style.visibility = "visible";
+                    document.getElementById("copyTo").style.visibility = "visible";
                     document.getElementById("to_space").innerHTML = '<span id="myId" style="text-decoration:underline;">Space</span>' + ': ' + to_place_name;
                 }
             }
@@ -1749,10 +1749,10 @@ function toSpaceRequest() {
                 $('#all_selected_items').css("margin-top", "80px");
                 $('#selected_items').css("margin-top", "80px");
                 $("#upTo").text("Upload this:").append('<br/>');
-                //document.getElementById("upTo").style.display = "inline";
+                document.getElementById("upTo").style.display = "inline";
                 $("#upTo").show();
-                //document.getElementById("up_select_items_button").style.display = "inline";
-                //document.getElementById("del_select_items_button").style.display = "inline";
+                document.getElementById("up_select_items_button").style.display = "inline";
+                document.getElementById("del_select_items_button").style.display = "inline";
                 $("#up_select_items_button").show();
                 $('#up_select_items_button').css("margin-top", "180px");
                 $('#up_select_items_button').css("margin-left", "-80px");
@@ -1760,7 +1760,7 @@ function toSpaceRequest() {
                 $("#button_div").hide();
                 $("#change_selection_div").hide();
                 $("#upShow").show();
-                //document.getElementById("up_place").style.display = "inline";
+                document.getElementById("up_place").style.display = "inline";
                 $("#up_place").show();
                 document.getElementById("up_from_space").innerHTML = '<span id="myId" style="text-decoration:underline;">Space</span>' + ': ' + to_place_name;
                 $('#up_place').css("margin-top", "128px");
@@ -1769,13 +1769,13 @@ function toSpaceRequest() {
                 $("#up_from_space").show();
                 $('#select_items_button').hide();
             } else if (sel_action_val == "select_action") {
-                //document.getElementById("up_place").style.display = "inline";
+                document.getElementById("up_place").style.display = "inline";
                 //$("#stylized").hide();		
                 $("#change_selection_div").hide();
                 $("#showDiv").hide();
                 $("#copyTo").hide();
                 $("#upShow").hide();
-                //document.getElementById("upTo").style.display = "inline";
+                document.getElementById("upTo").style.display = "inline";
                 $("#upTo").hide();
                 $("#up_place").hide();
                 $("#upFrom").hide();
@@ -1795,7 +1795,7 @@ function toSpaceRequest() {
     if (to_place_name == '') {
         //document.getElementById("start_copying_button").style.visibility="hidden";	
         $("#button_div").hide();
-        //document.getElementById("copyTo").style.visibility = "hidden";
+        document.getElementById("copyTo").style.visibility = "hidden";
         document.getElementById("to_space").innerHTML = msg2;
         //document.getElementById("to_space").innerHTML='<span id="myId" style="text-decoration:underline;">Space</span>'+': '+dest_space_name;
         $("#to_place option").each(function () {
@@ -1837,9 +1837,9 @@ function toGroupRequest() {
                         $("#dialog").show();
                         $("#dialog").dialog();
                     }
-                    //document.getElementById("start_copying_button").style.visibility = "hidden";
+                    document.getElementById("start_copying_button").style.visibility = "hidden";
                     $("#button_div").hide();
-                    //document.getElementById("copyTo").style.visibility = "hidden";
+                    document.getElementById("copyTo").style.visibility = "hidden";
                     document.getElementById("to_group").innerHTML = msg2;
                 } else {
                     if (sel_action_val == 'copy')
@@ -1852,12 +1852,12 @@ function toGroupRequest() {
                     var dialog_obj2 = $("#dialogMove");
                     dialog_obj2.dialog("close");
                     document.getElementById("to_place").disabled = false;
-                    //document.getElementById("start_copying_button").style.visibility = "visible";
-                    //document.getElementById("start_uploading").style.visibility = "hidden";
+                    document.getElementById("start_copying_button").style.visibility = "visible";
+                    document.getElementById("start_uploading").style.visibility = "hidden";
                     $("#button_div").show();
                     $("#change_selection_div").hide();
                     $('#select_items_button').show();
-                    //document.getElementById("copyTo").style.visibility = "visible";
+                    document.getElementById("copyTo").style.visibility = "visible";
                     document.getElementById("to_group").innerHTML = '<span id="myId" style="text-decoration:underline;">Group</span>' + ': ' + to_place_name;
                 }
             }
@@ -1937,7 +1937,7 @@ function toGroupRequest() {
         //document.getElementById("start_copying_button").style.visibility="hidden";	
         $("#button_div").hide();
         //document.getElementById("copyTo").style.visibility="hidden";
-        //document.getElementById("copyTo").style.visibility = "hidden";
+        document.getElementById("copyTo").style.visibility = "hidden";
         document.getElementById("to_group").innerHTML = msg2;
         //document.getElementById("to_group").innerHTML='<span id="myId" style="text-decoration:underline;">Group</span>'+': '+dest_space_name;	
         $("#to_place option").each(function () {
